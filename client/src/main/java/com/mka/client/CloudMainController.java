@@ -1,5 +1,6 @@
 package com.mka.client;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
@@ -18,6 +19,7 @@ public class CloudMainController implements Initializable {
     private DataOutputStream dos;
 
     private static final String SEND_FILE_COMMAND = "file";
+    private static final String FILES_ON_SERVER_COMMAND = "files on server";
 
 
     public void sendToServer(ActionEvent actionEvent) {
@@ -52,6 +54,7 @@ public class CloudMainController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initNetwork();
+        listenCommands();
         setCurrentDirectory(System.getProperty("user.home"));
         fillView(clientView, getFiles(currentDirectory));
         clientView.setOnMouseClicked(event -> {
@@ -63,6 +66,43 @@ public class CloudMainController implements Initializable {
                 }
             }
         });
+
+    }
+
+    private void listenCommands() {
+        new Thread(() -> {
+            try {
+                while (true) {
+                    String command = dis.readUTF();
+                    if (command.startsWith(FILES_ON_SERVER_COMMAND)) {
+                        String[] files = command.split("\n");
+                        Platform.runLater(() -> {
+                            try {
+                                fillView(serverView, getFilesOnServer(files));
+                            } catch (IOException e) {
+                                throw new RuntimeException(e);
+                            }
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }).start();
+    }
+
+    private List<String> getFilesOnServer(String[] files) throws IOException {
+        if (files != null) {
+            List<String> listFilesOnServer = new ArrayList<>();
+            for (String file : files) {
+                if (!file.equals(FILES_ON_SERVER_COMMAND)) {
+                    listFilesOnServer.add(file);
+                }
+            }
+            listFilesOnServer.add(0, "..");
+            return listFilesOnServer;
+        }
+        return List.of();
     }
 
     private void setCurrentDirectory(String directory) {

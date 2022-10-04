@@ -4,7 +4,9 @@ import java.net.Socket;
 public class FileHandler implements Runnable {
 
     private static final String SERVER_DIR = "server_file";
+    private static final String currentDirectory = SERVER_DIR;
     private static final String SEND_FILE_COMMAND = "file";
+    private static final String FILES_ON_SERVER_COMMAND = "files on server";
     private static final Integer BATCH_SIZE = 256;
 
     private final Socket socket;
@@ -29,6 +31,7 @@ public class FileHandler implements Runnable {
     public void run() {
         try {
             System.out.println("Start listening...");
+            sendFileNames(currentDirectory);
             while (true) {
                 String command = dis.readUTF();
                 if (command.equals(SEND_FILE_COMMAND)) {
@@ -40,12 +43,28 @@ public class FileHandler implements Runnable {
                             fos.write(batch, 0, read);
                         }
                     } catch (Exception ignored) {}
+                    sendFileNames(currentDirectory);
                 } else {
                     System.out.println("Unknown command received: " + command);
                 }
             }
         } catch (Exception ignored) {
             System.out.println("Client disconnected...");
+        }
+    }
+
+    private void sendFileNames(String directory) throws IOException {
+        File dir = new File(directory);
+        if (dir.isDirectory()) {
+            String[] list = dir.list();
+            if (list != null) {
+                StringBuilder files = new StringBuilder();
+                files.append(FILES_ON_SERVER_COMMAND + "\n");
+                for (String file : list) {
+                    files.append(file + "\n");
+                }
+                dos.writeUTF(files.toString());
+            }
         }
     }
 }
