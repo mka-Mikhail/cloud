@@ -12,7 +12,8 @@
               AnchorPane.leftAnchor="47.0" AnchorPane.topAnchor="8.0"/>
     <ListView fx:id="serverView" layoutX="359.0" layoutY="8.0" prefHeight="384.0" prefWidth="200.0" AnchorPane.bottomAnchor="8.0"
               AnchorPane.rightAnchor="47.0" AnchorPane.topAnchor="8.0"/>
-    <Button onAction="#sendToServer" layoutX="280.0" layoutY="131.0" mnemonicParsing="false" text="&gt;&gt;&gt;" AnchorPane.topAnchor="131.0"/>
-    <Button layoutX="280.0" layoutY="237.0" mnemonicParsing="false" text="&lt;&lt;&lt;"
+    <Button onAction="#sendFileToServer" layoutX="280.0" layoutY="131.0" mnemonicParsing="false" text="&gt;&gt;&gt;"
+            AnchorPane.topAnchor="131.0"/>
+    <Button onAction="#requestToDownloadFile" layoutX="280.0" layoutY="237.0" mnemonicParsing="false" text="&lt;&lt;&lt;"
             AnchorPane.bottomAnchor="131.0"/>
 </AnchorPane>
