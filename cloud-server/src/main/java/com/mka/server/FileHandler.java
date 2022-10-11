@@ -1,3 +1,5 @@
+package com.mka.server;
+
 import java.io.*;
 import java.net.Socket;
 
@@ -36,7 +38,7 @@ public class FileHandler implements Runnable {
             sendFileNamesToClient(currentDirectory);
             while (true) {
                 String command = dis.readUTF();
-                if (command.equals(ACCEPT_COMMAND_SEND_FILE)) {
+                if (command.equals(SEND_FILE_COMMAND.getCommand())) {
                     acceptFileFromClient();
                     sendFileNamesToClient(currentDirectory);
                 } else if (command.startsWith(ACCEPT_COMMAND_DOWNLOAD_FILE)) {
